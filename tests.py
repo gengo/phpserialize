@@ -71,6 +71,16 @@ class PhpSerializeTestCase(unittest.TestCase):
         self.assertEqual(phpserialize.load(f), {0: 1, 1: 2})
         self.assertEqual(phpserialize.load(f), 42)
 
+    def test_array_object(self):
+        self.assertEqual(phpserialize.loads(b"""a:1:{s:16:"525f70091c4bd_ja";C:11:"ArrayObject":896:{x:i:2;a:16:{s:10:"unit_count";i:3;s:7:"credits";d:0.14999999999999999;s:3:"eta";i:25236;s:8:"currency";s:3:"USD";s:4:"type";s:4:"text";s:15:"lc_src_detected";b:0;s:11:"custom_data";s:13:"525f70091c4bd";s:6:"lc_tgt";s:2:"ja";s:6:"lc_src";s:2:"en";s:5:"title";s:10:"sa dsa dsa";s:8:"body_src";s:10:"sa dsa dsa";s:10:"word_count";i:3;s:5:"force";i:1;s:7:"comment";s:0:"";s:12:"preview_html";s:463:"&lt;div class='item type_text' id='cart_item_525f70091c4bd'&gt;
+    &lt;a href='javascript:;' class='remove_item'&gt;x&lt;/a&gt;
+    &lt;span class='word_count'&gt;&lt;/span&gt;
+            &lt;p class='title'&gt;&lt;strong&gt;sa dsa dsa&lt;/strong&gt;&lt;/p&gt;
+        &lt;p class='body'&gt;sa dsa dsa&lt;/p&gt;
+        &lt;p class='item_tools'&gt;&lt;a href='javascript:;' class='edit_text'&gt;Edit Text / Add Instructions&lt;/a&gt;&lt;/p&gt;
+    &lt;/div&gt;
+";s:4:"tier";s:8:"standard";};m:a:0:{}}}""", object_hook=phpserialize.phpobject), {'525f70091c4bd_ja': None})
+
     def test_object_hook(self):
         class User(object):
             def __init__(self, username):

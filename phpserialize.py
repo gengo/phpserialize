@@ -253,6 +253,7 @@ r"""
     license: BSD
 """
 import codecs
+import re
 try:
     codecs.lookup_error('surrogateescape')
     default_errors = 'surrogateescape'
@@ -495,6 +496,21 @@ def load(fp, charset='utf-8', errors=default_errors, decode_strings=False,
         if type_ == b'a':
             _expect(b':')
             return array_hook(_load_array())
+        if type_ == b'x' or type_ == b'm':
+            _read_until(b';')
+            return None
+        if type_ == b'c':
+            _expect(b':')
+            length = int(_read_until(b':'))
+            _expect(b'"')
+            name = fp.read(length) # ArrayObject
+            _expect(b'"')
+            _expect(b':')
+            length = int(_read_until(b':'))
+            data = fp.read(length)
+            _expect(b'}')
+            _expect(b'}')
+            return None
         if type_ == b'o':
             if object_hook is None:
                 raise ValueError('object in serialization dump but '
@@ -507,7 +523,7 @@ def load(fp, charset='utf-8', errors=default_errors, decode_strings=False,
             if decode_strings:
                 name = name.decode(charset, errors)
             return object_hook(name, dict(_load_array()))
-        raise ValueError('unexpected opcode')
+        raise ValueError('unexpected opcode - %s' % repr(type_))
 
     return _unserialize()
 
